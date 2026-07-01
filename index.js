@@ -1,7 +1,7 @@
 (function () {
   "use strict";
-  console.log("[EPG] FILE LOADED");
-  try {
+
+  console.log("STEP 1");
 
   var BUILD_LABEL = "Build 0.1.36 - UI Unblock Guard";
   var MCP_ENDPOINT = "https://www.free-epg.de/api/mcp";
@@ -2093,24 +2093,19 @@
 
   function extractEpgMarkersFromText(text) {
     var source = String(text || "");
-    var pattern = /\{\{(EPG|EPG_PROBE):([a-zA-Z0-9_.-]+)\}\}/g;
-    var result = [];
-    var match;
-
-    pattern.lastIndex = 0;
-    match = pattern.exec(source);
+    var pattern = /\{\{EPG:([a-zA-Z0-9_.-]+)\}\}/g;
+    var markers = [];
+    var match = pattern.exec(source);
 
     while (match) {
-      result.push({
+      markers.push({
         raw: match[0],
-        slotId: match[2],
-        markerType: match[1],
-        markerRole: match[1] === "EPG_PROBE" ? "probe" : "target"
+        slotId: match[1]
       });
       match = pattern.exec(source);
     }
 
-    return result;
+    return markers;
   }
 
   function slotIdFromTargetLabelValue(value) {
@@ -2926,54 +2921,60 @@
   }
 
   function initializeApp() {
-    try {
-      document.body.innerHTML =
-        '<div style="padding:10px;font-family:sans-serif">' +
-        '<h2>EPG Plugin (Recovery Mode)</h2>' +
-        '<button id="btnPing" type="button">Ping</button>' +
-        '<div id="log" style="margin-top:8px;white-space:pre-wrap;"></div>' +
-        '</div>';
+    var buildLabel = $("buildLabel");
+    console.log("STEP 3");
+    installGlobalErrorLogging();
+    state.logEntries = readPersistedLogEntries();
+    log("BOOT START");
+    state.isLayoutInspecting = false;
+    state.isFillingTable = false;
+    state.selectedDate = formatDateForInput(getTomorrowDate());
+    state.apiKey = readSetting("epgExactFit.apiKey");
+    state.tableLabel = readSetting("epgExactFit.tableLabel") || "epg-target-table";
 
-      var pingButton = document.getElementById("btnPing");
-      var logBox = document.getElementById("log");
-
-      if (pingButton) {
-        pingButton.onclick = function () {
-          if (logBox) {
-            logBox.innerHTML += "<div>Ping OK</div>";
-          }
-          console.log("[EPG] PING OK");
-        };
-      }
-
-      console.log("[EPG] BOOT START");
-      if (logBox) {
-        logBox.innerHTML += "<div>BOOT START</div>";
-      }
-      console.log("[EPG] BOOT DONE");
-      if (logBox) {
-        logBox.innerHTML += "<div>BOOT DONE</div>";
-      }
-    } catch (e) {
-      console.error("INIT FAIL", e);
-      try {
-        document.body.innerHTML =
-          "<div style='font-family:sans-serif;padding:10px'>" +
-          "<h2>EPG Plugin Fehler</h2>" +
-          "<pre>" + escapeHtml(e && e.message || e) + "</pre>" +
-          "</div>";
-      } catch (displayError) {
-        console.error("INIT FAIL DISPLAY", displayError);
-      }
+    if (buildLabel) {
+      buildLabel.textContent = BUILD_LABEL;
     }
+
+    console.log("STEP ACTIONS");
+    try {
+      ensurePrimaryActions();
+    } catch (error) {
+      console.error("ACTIONS CRASH", error);
+      throw error;
+    }
+
+    console.log("STEP RENDER");
+    try {
+      render();
+    } catch (error) {
+      console.error("RENDER CRASH", error);
+      throw error;
+    }
+
+    console.log("STEP BIND");
+    try {
+      bindEvents();
+    } catch (error) {
+      console.error("BIND CRASH", error);
+      throw error;
+    }
+    log("Runtime geladen: " + BUILD_LABEL);
+    log("Plugin initialisiert.");
+    log("BOOT DONE");
   }
 
   function boot() {
     try {
+      console.log("STEP 2");
       initializeApp();
     } catch (error) {
       safeConsoleError("Boot failed", error);
-      showFatalBootError(error);
+      try {
+        document.body.innerHTML = "<pre>" + String(error && error.stack || error) + "</pre>";
+      } catch (displayError) {
+        showFatalBootError(error);
+      }
     }
   }
 
@@ -2983,16 +2984,5 @@
     document.addEventListener("DOMContentLoaded", boot);
   } else {
     boot();
-  }
-  } catch (error) {
-    console.error("[EPG] FATAL ERROR", error);
-
-    try {
-      document.body.innerHTML =
-        "<div style='font-family:sans-serif;padding:10px'>" +
-        "<h2>EPG Plugin Fehler</h2>" +
-        "<pre>" + (error && error.message || error) + "</pre>" +
-        "</div>";
-    } catch (e) {}
   }
 }());
