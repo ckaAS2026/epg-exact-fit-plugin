@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EPG Exact Fit</title>
+    <link rel="stylesheet" href="./src/styles.css?v=0.1.36" />
+  </head>
+  <body data-build="0.1.36">
+    <main class="plugin-shell" aria-label="EPG Exact Fit Panel">
+      <header class="plugin-header">
+        <h1>EPG Exact Fit</h1>
+        <span id="buildLabel" class="build-label">Build 0.1.36 - UI Unblock Guard</span>
+      </header>
+
+      <section id="actionsPanel" class="actions" aria-label="Aktionen" style="display:block;width:100%;margin:10px 0;">
+        <button id="btnStart" type="button" style="display:block;width:100%;min-height:46px;margin:8px 0;border:2px solid #111111;background:#ffe100;color:#111111;font-weight:700;">Daten laden / Start</button>
+      </section>
+
+      <section class="start-section" aria-label="Start">
+        <div id="statusBar" class="status idle">Status: Bereit</div>
+        <div class="progress-container">
+          <div id="progressBar" class="progress-bar"></div>
+        </div>
+        <div id="progressText">0%</div>
+      </section>
+
+      <section class="panel-section" aria-labelledby="date-heading">
+        <h2 id="date-heading">Datum</h2>
+        <label class="field">
+          <span>Schnellauswahl</span>
+          <select id="dateShortcut">
+            <option value="">Datum wählen</option>
+            <option value="today">Heute</option>
+            <option value="tomorrow">Morgen</option>
+          </select>
+        </label>
+        <label class="field">
+          <span>Ausstrahlungstag</span>
+          <input id="selectedDate" type="date" autocomplete="off" />
+        </label>
+      </section>
+
+      <section class="panel-section" aria-labelledby="settings-heading">
+        <h2 id="settings-heading">Settings</h2>
+        <label class="field">
+          <span>API Key</span>
+          <input id="apiKey" type="password" autocomplete="off" spellcheck="false" />
+        </label>
+        <label class="field">
+          <span>Script Label (Zieltabelle)</span>
+          <input id="tableLabel" type="text" autocomplete="off" spellcheck="false" />
+        </label>
+        <div class="settings-actions">
+          <button id="saveSettingsButton" type="button">Settings speichern</button>
+        </div>
+      </section>
+
+      <section class="panel-section log-section" aria-labelledby="log-heading">
+        <div class="section-row">
+          <h2 id="log-heading">Log</h2>
+          <div class="log-actions">
+            <button id="copyLogButton" class="secondary-button" type="button">Log kopieren</button>
+            <button id="clearLogButton" class="secondary-button" type="button">Leeren</button>
+          </div>
+        </div>
+        <textarea id="logOutput" spellcheck="false" rows="14" aria-label="Logausgabe"></textarea>
+      </section>
+    </main>
+    <script src="./index.js?v=0.1.36"></script>
+  </body>
+</html>

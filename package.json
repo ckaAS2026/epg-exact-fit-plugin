@@ -1,0 +1,22 @@
+{
+  "name": "epg-exact-fit-plugin",
+  "version": "0.1.36",
+  "description": "Initiales UXP Plugin-Grundgeruest fuer EPG Exact Fit in Adobe InDesign.",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "lint": "echo \"No linting configured yet.\"",
+    "test": "node tests/runArchitectureTests.js",
+    "test:architecture": "node tests/runArchitectureTests.js",
+    "test:ui": "node tests/runUiSmokeTests.js",
+    "check:syntax": "node --check index.js && find src -name '*.js' -exec node --check {} \\;"
+  },
+  "keywords": [
+    "adobe",
+    "indesign",
+    "uxp",
+    "plugin"
+  ],
+  "author": "",
+  "license": "UNLICENSED"
+}

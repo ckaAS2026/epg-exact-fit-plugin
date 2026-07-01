@@ -1,0 +1,289 @@
+:root {
+  color-scheme: light dark;
+  --surface: #f7f7f7;
+  --surface-raised: #ffffff;
+  --text: #202020;
+  --muted: #666666;
+  --border: #cfcfcf;
+  --accent: #2458d3;
+  --accent-hover: #1f4cb5;
+  --button-text: #ffffff;
+  --radius: 6px;
+  --gap: 12px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --surface: #242424;
+    --surface-raised: #303030;
+    --text: #f0f0f0;
+    --muted: #b8b8b8;
+    --border: #555555;
+    --accent: #6f91ff;
+    --accent-hover: #88a5ff;
+    --button-text: #111111;
+  }
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--surface);
+  color: var(--text);
+  font-size: 13px;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+.plugin-shell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  min-width: 300px;
+  min-height: 100vh;
+  overflow: visible;
+  padding: 14px;
+}
+
+.plugin-header h1,
+.panel-section h2 {
+  margin: 0;
+  font-weight: 650;
+}
+
+.plugin-header h1 {
+  font-size: 18px;
+}
+
+.build-label {
+  display: block;
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.start-section {
+  display: block;
+  width: 100%;
+}
+
+.start-button {
+  display: block;
+  width: 100%;
+  min-height: 46px;
+  border: 2px solid #111111;
+  background: #ffe100;
+  color: #111111;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.start-button:hover {
+  background: #ffd000;
+}
+
+.status {
+  margin-top: 8px;
+  padding: 6px;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 12px;
+}
+
+.status.idle {
+  background: #444444;
+}
+
+.status.loading {
+  background: #0066aa;
+}
+
+.status.success {
+  background: #22cc77;
+  color: #111111;
+}
+
+.status.error {
+  background: #cc3333;
+}
+
+.progress-container {
+  width: 100%;
+  height: 6px;
+  background: #333333;
+  margin-top: 6px;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.progress-bar {
+  width: 0%;
+  height: 100%;
+  background: #24a3ff;
+  transition: width 0.2s ease;
+}
+
+#progressText {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.panel-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.panel-section h2 {
+  font-size: 13px;
+}
+
+.section-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.log-actions {
+  display: flex;
+  flex: 0 0 auto;
+  gap: 6px;
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  color: var(--muted);
+}
+
+input,
+textarea,
+select,
+button {
+  width: 100%;
+  border-radius: var(--radius);
+  font: inherit;
+}
+
+input,
+textarea,
+select {
+  border: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text);
+}
+
+input,
+select {
+  min-height: 30px;
+  padding: 5px 8px;
+}
+
+textarea {
+  min-height: 190px;
+  max-height: 320px;
+  resize: vertical;
+  padding: 8px;
+  line-height: 1.4;
+  white-space: pre;
+  user-select: text;
+  -webkit-user-select: text;
+  overflow: auto;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+}
+
+.actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.primary-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.primary-actions button {
+  min-height: 38px;
+  border: 2px solid var(--accent);
+  background: var(--surface-raised);
+  color: var(--text);
+  font-weight: 700;
+}
+
+.primary-actions button:hover {
+  background: var(--accent);
+  color: var(--button-text);
+}
+
+.settings-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+button {
+  min-height: 32px;
+  border: 0;
+  background: var(--accent);
+  color: var(--button-text);
+  cursor: pointer;
+}
+
+button:hover {
+  background: var(--accent-hover);
+}
+
+button:disabled {
+  cursor: default;
+  opacity: 0.58;
+}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.secondary-button {
+  width: auto;
+  min-height: 26px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+}
+
+.secondary-button:hover {
+  background: var(--surface-raised);
+}
+
+.log-section {
+  flex: 0 0 auto;
+  min-height: 260px;
+  overflow: visible;
+}
+
+#logOutput {
+  display: block;
+  width: 100%;
+  min-height: 260px;
+  height: 42vh;
+  max-height: none;
+  flex: 0 0 auto;
+  cursor: text;
+  overflow-x: auto;
+  overflow-y: scroll;
+  -webkit-user-select: text;
+  user-select: text;
+}

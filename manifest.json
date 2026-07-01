@@ -1,0 +1,44 @@
+{
+  "id": "epg.exact.fit.plugin",
+  "name": "EPG Exact Fit",
+  "version": "0.1.36",
+  "main": "index.html",
+  "manifestVersion": 5,
+  "host": [
+    {
+      "app": "ID",
+      "minVersion": "18.0.0"
+    }
+  ],
+  "requiredPermissions": {
+    "network": {
+      "domains": [
+        "https://www.free-epg.de"
+      ]
+    }
+  },
+  "entrypoints": [
+    {
+      "type": "panel",
+      "id": "epgExactFitPanel",
+      "label": "EPG Exact Fit",
+      "minimumSize": {
+        "width": 320,
+        "height": 420
+      },
+      "maximumSize": {
+        "width": 640,
+        "height": 900
+      },
+      "preferredDockedSize": {
+        "width": 360,
+        "height": 620
+      },
+      "preferredFloatingSize": {
+        "width": 380,
+        "height": 640
+      },
+      "icons": []
+    }
+  ]
+}
