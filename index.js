@@ -1,8 +1,6 @@
 (function () {
   "use strict";
 
-  console.log("STEP 1");
-
   var BUILD_LABEL = "Build 0.1.36 - UI Unblock Guard";
   var MCP_ENDPOINT = "https://www.free-epg.de/api/mcp";
   var DEFAULT_PROTOCOLS = ["2025-03-26", "2024-11-05"];
@@ -16,7 +14,7 @@
       .replace(/</g, "&lt;")
       .replace(/>/g, "&gt;")
       .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+      .replace(/'/g, "&#039;");
   }
 
   function safeConsoleError(label, error) {
@@ -31,22 +29,32 @@
 
   function showFatalBootError(error) {
     try {
-      var message = error && error.stack || error && error.message || String(error || "Unbekannter Bootfehler");
-      var host = typeof document !== "undefined" && (document.body || document.documentElement);
+      var message = error && (error.stack || error.message) || String(error || "Unbekannter Fehler");
+      var host = document.body || document.documentElement;
       if (!host) {
-        safeConsoleError("Fatal boot error without document host", error);
         return;
       }
       host.innerHTML =
-        '<div style="font-family:sans-serif;padding:12px;color:#111;background:#fff;">' +
-        '<h2>EPG Exact Fit - Bootfehler</h2>' +
-        '<p>Das Plugin konnte nicht initialisiert werden.</p>' +
-        '<pre style="white-space:pre-wrap;border:1px solid #ccc;padding:8px;max-height:420px;overflow:auto;">' +
+        "<div style='font-family:sans-serif;padding:12px;background:#fff;color:#111'>" +
+        "<h2>EPG Exact Fit - Bootfehler</h2>" +
+        "<p>Das Plugin konnte nicht initialisiert werden.</p>" +
+        "<pre style='white-space:pre-wrap;border:1px solid #ccc;padding:8px'>" +
         escapeHtml(message) +
-        '</pre>' +
-        '</div>';
+        "</pre>" +
+        "</div>";
     } catch (displayError) {
-      safeConsoleError("Fatal boot display failed", displayError);
+      try {
+        console.error("[EPG Exact Fit] Bootfehler konnte nicht angezeigt werden", displayError);
+      } catch (_) {}
+    }
+  }
+
+  function safeBootStep(label, fn) {
+    try {
+      return fn();
+    } catch (error) {
+      safeConsoleError("Boot step failed: " + label, error);
+      throw error;
     }
   }
 
@@ -2921,66 +2929,42 @@
   }
 
   function initializeApp() {
-    var buildLabel = $("buildLabel");
-    console.log("STEP 3");
-    installGlobalErrorLogging();
-    state.logEntries = readPersistedLogEntries();
-    log("BOOT START");
-    state.isLayoutInspecting = false;
-    state.isFillingTable = false;
-    state.selectedDate = formatDateForInput(getTomorrowDate());
-    state.apiKey = readSetting("epgExactFit.apiKey");
-    state.tableLabel = readSetting("epgExactFit.tableLabel") || "epg-target-table";
-
-    if (buildLabel) {
-      buildLabel.textContent = BUILD_LABEL;
-    }
-
-    console.log("STEP ACTIONS");
-    try {
-      ensurePrimaryActions();
-    } catch (error) {
-      console.error("ACTIONS CRASH", error);
-      throw error;
-    }
-
-    console.log("STEP RENDER");
-    try {
-      render();
-    } catch (error) {
-      console.error("RENDER CRASH", error);
-      throw error;
-    }
-
-    console.log("STEP BIND");
-    try {
-      bindEvents();
-    } catch (error) {
-      console.error("BIND CRASH", error);
-      throw error;
-    }
-    log("Runtime geladen: " + BUILD_LABEL);
-    log("Plugin initialisiert.");
-    log("BOOT DONE");
+    safeBootStep("installGlobalErrorLogging", installGlobalErrorLogging);
+    safeBootStep("readPersistedLogEntries", function () {
+      state.logEntries = readPersistedLogEntries();
+    });
+    safeBootStep("initializeState", function () {
+      state.selectedDate = formatDateForInput(getTomorrowDate());
+      state.apiKey = readSetting("epgExactFit.apiKey");
+      state.tableLabel = readSetting("epgExactFit.tableLabel") || "epg-target-table";
+      state.isLoading = false;
+      state.isLayoutInspecting = false;
+      state.isFillingTable = false;
+    });
+    safeBootStep("setBuildLabel", function () {
+      var buildLabel = $("buildLabel");
+      if (buildLabel) {
+        buildLabel.textContent = BUILD_LABEL;
+      }
+    });
+    safeBootStep("ensurePrimaryActions", ensurePrimaryActions);
+    safeBootStep("render", render);
+    safeBootStep("bindEvents", bindEvents);
+    log("BOOT: initializeApp abgeschlossen");
   }
 
   function boot() {
     try {
-      console.log("STEP 2");
       initializeApp();
     } catch (error) {
-      safeConsoleError("Boot failed", error);
       try {
-        document.body.innerHTML = "<pre>" + String(error && error.stack || error) + "</pre>";
-      } catch (displayError) {
-        showFatalBootError(error);
-      }
+        console.error("[EPG Exact Fit] FATAL BOOT", error);
+      } catch (_) {}
+      showFatalBootError(error);
     }
   }
 
-  if (typeof document === "undefined") {
-    showFatalBootError(new Error("Dokument-Objekt ist beim Plugin-Boot nicht verfuegbar."));
-  } else if (document.readyState === "loading" && typeof document.addEventListener === "function") {
+  if (document.readyState === "loading" && typeof document.addEventListener === "function") {
     document.addEventListener("DOMContentLoaded", boot);
   } else {
     boot();
